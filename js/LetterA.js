@@ -177,9 +177,7 @@ class LetterA extends Object3D {
         this.vertices_ = Object.assign([], this.position);
         this.normals = [];
         this.textureCoord = [];
-        console.log("LetterA");
-        console.log(this.vertices.length);
-        console.log("LetterA");
+
         for (let i = 0; i < this.vertices.length / 3; i++) {
             this.textureCoord.push(0.0, 0.0);
         }

@@ -109,15 +109,18 @@ class WebGL {
         GL.clearColor(0.0, 0.0, 0.0, 1.0);
         GL.enable(GL.DEPTH_TEST);
     }
+
     mvPushMatrix(idx) {
         let duplicate = mat4.create();
         let mvMat = this.mvMatrix[idx], mvMatStack = this.mvMatrixStack[idx];
         mat4.copy(duplicate, mvMat);
         mvMatStack.push(duplicate);
     }
+
     mvPopMatrix(idx) {
         this.mvMatrix[idx] = this.mvMatrixStack[idx].pop();
     }
+
     setMatrixUniform(idx) {
         let normalMatrix = mat3.create();
         let mvMat = this.mvMatrix[idx], pMat = this.pvMatrix[idx];
@@ -126,30 +129,31 @@ class WebGL {
         GL.uniformMatrix4fv(this.shaderProgram.mvMatrixUniform, false, mvMat);
         GL.uniformMatrix3fv(this.shaderProgram.nMatrixUniform, false, normalMatrix);
     }
+
     add(object3d) {
         let buffer = {};
         if (object3d.type === 'obj') {
             buffer.id = object3d.id;
             buffer.obj3d = object3d;
-            console.log(buffer.id);
+
             buffer.position = GL.createBuffer();
             GL.bindBuffer(GL.ARRAY_BUFFER, buffer.position);
             GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(object3d.vertices), GL.STATIC_DRAW);
             buffer.position.itemSize = 3;
             buffer.position.numItems = object3d.vertices.length / buffer.position.itemSize;
-            console.log(buffer.position.numItems);
+
             buffer.normal = GL.createBuffer();
             GL.bindBuffer(GL.ARRAY_BUFFER, buffer.normal);
             GL.bufferData(GL.ARRAY_BUFFER, new Float32Array(object3d.normals), GL.STATIC_DRAW);
             buffer.normal.itemSize = 3;
             buffer.normal.numItems = object3d.normals.length / buffer.normal.itemSize;
-            console.log(buffer.normal.numItems);
+
             buffer.indices = GL.createBuffer();
             GL.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, buffer.indices);
             GL.bufferData(GL.ELEMENT_ARRAY_BUFFER, new Uint16Array(object3d.indices), GL.STATIC_DRAW);
             buffer.indices.itemSize = 1;
             buffer.indices.numItems = object3d.indices.length / buffer.indices.itemSize;
-            console.log(buffer.indices.numItems);
+
             if (object3d.textureSrc !== undefined) {
                 buffer.texture = GL.createTexture();
                 buffer.texture.loaded = false;
@@ -185,6 +189,7 @@ class WebGL {
             this.object3dBuffer.push(buffer);
         }
     }
+
     geometryToBuffer(o) {
         GL.bindBuffer(GL.ARRAY_BUFFER, o.position);
         GL.vertexAttribPointer(this.shaderProgram.vertexPositionAttribute, o.position.itemSize, GL.FLOAT, false, 0, 0);
@@ -211,6 +216,7 @@ class WebGL {
             GL.uniform3f(this.shaderProgram.pointLightingColorUniform, o.obj3d.color.r, o.obj3d.color.g, o.obj3d.color.b);
         }
     }
+
     frameOne(sw, sh, ew, eh) {
         GL.scissor(sw, sh, ew, eh);
         GL.viewport(sw, sh, ew, eh);
@@ -244,6 +250,7 @@ class WebGL {
         }
         document.dispatchEvent(eventAfterRender);
     }
+
     frameTwo(sw, sh, ew, eh) {
         GL.scissor(sw, sh, ew, eh);
         GL.viewport(sw, sh, ew, eh);
@@ -283,11 +290,12 @@ class WebGL {
         }
         document.dispatchEvent(eventAfterRender);
     }
+
     frameThree(sw, sh, ew, eh) {
         GL.scissor(sw, sh, ew, eh);
         GL.viewport(sw, sh, ew, eh);
         GL.clear(GL.COLOR_BUFFER_BIT, GL.DEPTH_BUFFER_BIT);
-        // Perspectiv Camra
+        // Perspective Camera
         mat4.perspective(this.pvMatrix[3], glMatrix.toRadian(45), GL.VIEWPORT_WIDTH / GL.VIEWPORT_HEIGHT, 0.1, 1000.0);
         mat4.identity(this.mvMatrix[3]);
         for (let i = 0; i < this.object3dBuffer.length; i++) {
@@ -322,6 +330,7 @@ class WebGL {
             this.mvPopMatrix(3);
         }
     }
+
     frameFour(sw, sh, ew, eh) {
         GL.scissor(sw, sh, ew, eh);
         GL.viewport(sw, sh, ew, eh);
@@ -358,6 +367,7 @@ class WebGL {
         }
         cameraAngle += 0.02;
     }
+
     render() {
         GL.enable(GL.SCISSOR_TEST);
         let width = GL.VIEWPORT_WIDTH;
